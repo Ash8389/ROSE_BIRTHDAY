@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Birthday Surprise — SPA</title>
+
+  <!-- keep fonts and your unchanged CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;600&family=Kristi&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="cake-page">
+
+  <!-- Preloader -->
+  <div id="preloader"><div class="heart-loader">💖</div></div>
+
+  <!-- Background music (kept outside sections so it persists) -->
+  <audio id="birthday-music" src="/assets/birthday.mp3" autoplay loop playsinline muted></audio>
+  <button id="music-toggle">🔊</button>
+
+  <!-- shared background elements (photos / flowers / bokeh) - unchanged -->
+  <div id="flower-fall-container">
+    <div class="flower">🌸</div><div class="flower">🌸</div><div class="flower">🌸</div><div class="flower">🌸</div>
+    <div class="flower">🌸</div><div class="flower">🌸</div><div class="flower">🌸</div><div class="flower">🌸</div>
+  </div>
+
+  <div id="dreamscape-background">
+    <div class="bokeh-light"></div><div class="bokeh-light"></div><div class="bokeh-light"></div>
+
+    <div class="photo-container shape-heart" style="top: 43%; left: 28%; width: 170px; height: 170px;"><img style="padding-left: 15px;" src="/assets/photo8.jpg" alt="Memory 1"></div>
+    <div class="photo-container shape-circle" style="top: 10%; right: 15%; width: 200px; height: 200px;"><img style="height: fit-content;" src="/assets/photo5.jpg" alt="Memory 2"></div>
+    <div class="photo-container shape-soft-blob-1" style="bottom: 50%; left: 10%; width: 220px; height: 200px;"><img src="/assets/photo3.png" alt="Memory 3"></div>
+    <div class="photo-container shape-oval" style="bottom: 20%; right: 10%; width: 150px; height: 220px;"><img style="height: fit-content; padding-left: 7px;" src="/assets/photo1.jpg" alt="Memory 4"></div>
+    <div class="photo-container shape-soft-blob-2" style="top: 70%; left: 18%; width: 180px; height: 180px;"><img src="/assets/photo7.jpg" alt="Memory 5"></div>
+    <div class="photo-container shape-circle" style="top: 9%; right: 50%; width: 120px; height: 120px;"><img src="/assets/photo2.jpg" alt="Memory 6"></div>
+    <div class="photo-container shape-soft-blob-1" style="bottom: 8%; left: 55%; width: 170px; height: 170px;"><img style="padding-left: 35px;" src="/assets/photo4.jpg" alt="Memory 7"></div>
+    <div class="photo-container shape-heart" style="top: 45%; right: 25%; width: 150px; height: 150px;"><img style="height: fit-content;" src="/assets/photo6.jpg" alt="Memory 8"></div>
+  </div>
+
+  <canvas id="sparkle-canvas"></canvas>
+
+  <!-- content-wrapper with three SPA sections (CAKE -> SURPRISE -> CARDS) -->
+  <div class="content-wrapper">
+
+    <!-- -----------------------
+         PAGE 1: CAKE (initial visible)
+         ----------------------- -->
+    <section id="page-cake" class="page">
+      <div class="instruction-text" id="instruction">Click Start to make a wish...</div>
+
+      <div class="cake-container" id="cakeContainer">
+        <div class="cake">
+          <div class="plate"></div>
+          <div class="layer layer-bottom"></div>
+          <div class="layer layer-middle"></div>
+          <div class="layer layer-top"></div>
+          <div class="icing"></div>
+          <div class="drip drip1"></div>
+          <div class="drip drip2"></div>
+          <div class="drip drip3"></div>
+          <div class="candle" id="candle">
+            <div class="flame" id="flame"></div>
+            <div class="smoke"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="birthday-wish hidden" id="birthdayWish">Happy Birthday To You!</div>
+
+      <div style="display:flex; gap:12px; justify-content:center; align-items:center;">
+        <button class="start-button" id="startButton">Start</button>
+        <button class="start-button hidden" id="blowButton">Blow Out Candle 🎂</button>
+      </div>
+    </section>
+
+    <!-- -----------------------
+         PAGE 2: SURPRISE (hidden initially)
+         ----------------------- -->
+    <section id="page-surprise" class="page hidden">
+      <h1 class="interactive-heading" id="main-heading">Happy Birthday To You</h1>
+
+      <div class="gift-container" id="giftContainer">
+        <div class="gift-lid"></div>
+        <div class="gift-box">
+          <div class="message-inside">Just for you...</div>
+        </div>
+        <div class="gift-ribbon" id="giftRibbon">🎁</div>
+      </div>
+
+      <div class="video-section" id="videoBox">
+        <video controls id="birthdayVideo" src="/assets/video.mp4" preload="auto"></video>
+        <!-- overlay injected dynamically if autoplay blocked -->
+      </div>
+
+      <div class="closing" id="closingMsg">...and a few more words...</div>
+    </section>
+
+    <!-- -----------------------
+         PAGE 3: CARDS (hidden initially)
+         ----------------------- -->
+    <section id="page-cards" class="page hidden">
+      <h2 class="page-title interactive-heading" id="cards-heading">This is for the very special one...</h2>
+
+      <div class="cards-grid">
+        <div class="card"><div class="card-inner"><div class="card-front">A Wish For You</div><div class="card-back"><p>May your birthday be just the beginning of a year filled with happy memories, wonderful moments, and shining dreams.</p></div></div></div>
+        <div class="card"><div class="card-inner"><div class="card-front">What You Mean to Me</div><div class="card-back"><p>You are my sun, my moon, and all my stars. Thank you for the time you gave to me. You will be always be sepcial to me.</p></div></div></div>
+        <div class="card"><div class="card-inner"><div class="card-front">Few Lines For You</div><div class="card-back"><p>Teri khubsurti mein hai ek nasha sa,<br/>Jo dekh le tujhko, bas dekhte reh jaaye.</p></div></div></div>
+      </div>
+
+      <div class="closing cards-closing">With all my love, forever. 💕</div>
+      <a href="#" class="replay-link" id="replayToCake">Replay the Surprise ✨</a>
+    </section>
+
+  </div> <!-- end content-wrapper -->
+
+  <script>
+    /* ========= Utilities & initial state ========= */
+    const pages = ['page-cake','page-surprise','page-cards'];
+    function setBodyPageClass(pageId) {
+      const map = { 'page-cake':'cake-page', 'page-surprise':'surprise-page', 'page-cards':'cards-page' };
+      document.body.classList.remove('cake-page','surprise-page','cards-page');
+      const cls = map[pageId];
+      if (cls) document.body.classList.add(cls);
+    }
+    function showPage(pageId){
+      pages.forEach(p => document.getElementById(p).classList.add('hidden'));
+      document.getElementById(pageId).classList.remove('hidden');
+      setBodyPageClass(pageId);
+      window.scrollTo(0,0);
+    }
+
+    // Preloader
+    window.addEventListener('load', () => {
+      const pre = document.getElementById('preloader');
+      pre.style.opacity = '0';
+      setTimeout(()=> { pre.style.display = 'none'; }, 700);
+    });
+
+    /* ========= DOM refs ========= */
+    const music = document.getElementById('birthday-music');
+    const musicToggle = document.getElementById('music-toggle');
+
+    const canvas = document.getElementById('sparkle-canvas');
+    const ctx = canvas.getContext && canvas.getContext('2d');
+
+    const candle = document.getElementById('candle');
+    const flame = document.getElementById('flame');
+    const cakeContainer = document.getElementById('cakeContainer');
+    const birthdayWish = document.getElementById('birthdayWish');
+    const photos = document.querySelectorAll('.photo-container');
+
+    const startButton = document.getElementById('startButton');
+    const blowButton = document.getElementById('blowButton');
+    const instruction = document.getElementById('instruction');
+
+    const giftContainer = document.getElementById('giftContainer');
+    const giftRibbon = document.getElementById('giftRibbon');
+    const videoBox = document.getElementById('videoBox');
+    const birthdayVideo = document.getElementById('birthdayVideo');
+    const closingMsg = document.getElementById('closingMsg');
+
+    const replayToCake = document.getElementById('replayToCake');
+
+    /* ========= Music controls ========= */
+    function updateToggleIcon(){ musicToggle.textContent = music.paused ? '🔇' : '🔊'; }
+    music.addEventListener('play', updateToggleIcon);
+    music.addEventListener('pause', updateToggleIcon);
+    musicToggle.addEventListener('click', () => {
+      if (music.paused) {
+        music.muted = false; music.volume = 1.0; music.play().catch(()=>{});
+      } else {
+        music.pause();
+      }
+    });
+
+    // unlock autoplay on first interaction
+    function unlockAudioOnce(){
+      try { music.muted = false; music.volume = 1.0; music.play().catch(()=>{}); } catch(e){}
+      document.removeEventListener('pointerdown', unlockAudioOnce);
+      document.removeEventListener('keydown', unlockAudioOnce);
+    }
+    document.addEventListener('pointerdown', unlockAudioOnce, { once:true });
+    document.addEventListener('keydown', unlockAudioOnce, { once:true });
+
+    /* ========= Sparkles (unchanged logic) ========= */
+    let sparkles = [];
+    function setCanvasSize(){ if(!ctx) return; canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    setCanvasSize(); window.addEventListener('resize', setCanvasSize);
+    class Sparkle {
+      constructor(x,y){ this.x=x; this.y=y; this.size=Math.random()*2.5+1; this.speedX=Math.random()*2-1; this.speedY=Math.random()*2-1; this.color=`hsl(${Math.random()*60 + 300}, 100%, 80%)`; this.life=120; }
+      update(){ this.x+=this.speedX; this.y+=this.speedY; if(this.size>0.1) this.size-=0.05; this.life-=1; }
+      draw(){ if(!ctx) return; ctx.fillStyle=this.color; ctx.globalAlpha=this.life/120; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+    }
+    function handleMouseMove(e){ for(let i=0;i<2;i++) sparkles.push(new Sparkle(e.clientX,e.clientY)); }
+    window.addEventListener('mousemove', handleMouseMove);
+    function animateSparkles(){ if(!ctx){ requestAnimationFrame(animateSparkles); return; } ctx.clearRect(0,0,canvas.width,canvas.height); for(let i=sparkles.length-1;i>=0;i--){ sparkles[i].update(); sparkles[i].draw(); if(sparkles[i].life<=0||sparkles[i].size<=0.1) sparkles.splice(i,1); } requestAnimationFrame(animateSparkles); }
+    animateSparkles();
+
+    /* ========= Candle / Blow / Smoke ========= */
+    function createSmokePuffs(){
+      const smokeContainer = candle.querySelector('.smoke');
+      if (!smokeContainer) return;
+      smokeContainer.innerHTML = '';
+      const puffCount = 3;
+      for (let i=0;i<puffCount;i++){
+        const puff = document.createElement('div'); puff.className='puff';
+        const dx = (Math.random()*60)-30; puff.style.setProperty('--dx', `${dx}px`);
+        const duration = 900 + Math.floor(Math.random()*700); puff.style.setProperty('--duration', `${duration}ms`);
+        puff.style.animationDelay = `${i*120}ms`;
+        smokeContainer.appendChild(puff);
+        puff.addEventListener('animationend', ()=> { if(puff && puff.parentNode) puff.parentNode.removeChild(puff); });
+      }
+    }
+
+    let isExtinguished = false;
+    function extinguishCandles(){
+      if (isExtinguished) return;
+      isExtinguished = true;
+
+      if (flame) {
+        flame.style.transition = 'opacity 0.15s linear, transform 0.18s ease';
+        flame.style.opacity = '0';
+        flame.style.transform = 'scale(0.7)';
+      }
+
+      createSmokePuffs();
+
+      blowButton.classList.add('hidden');
+      startButton.classList.add('hidden');
+
+      setTimeout(()=>{
+        candle.classList.add('extinguished');
+        if (flame) flame.style.display = 'none';
+
+        instruction.classList.add('fade-out');
+        cakeContainer.classList.add('fade-out');
+
+        setTimeout(()=>{
+          birthdayWish.classList.remove('hidden');
+          birthdayWish.classList.add('show');
+          photos.forEach(p => p.classList.add('reveal'));
+        }, 250);
+
+        // after short delay move to surprise
+        setTimeout(()=> showPage('page-surprise'), 3000);
+      }, 500);
+    }
+
+    startButton.addEventListener('click', () => {
+      try {
+        // user gesture: ensure music can play
+        music.muted = false;
+        music.volume = 1.0;
+        music.play().catch(()=>{});
+      } catch(e){}
+      startButton.classList.add('hidden');
+      blowButton.classList.remove('hidden');
+      instruction.textContent = "Make a wish and click Blow Out Candle...";
+    });
+
+    blowButton.addEventListener('click', extinguishCandles);
+
+    /* ========= Surprise: gift unwrap & robust video play ========= */
+
+    // overlay used if autoplay blocked
+    let videoPlayOverlay = null;
+    function showVideoPlayOverlay(){
+      if (!videoBox) return;
+      // remove existing overlay
+      hideVideoPlayOverlay();
+
+      // create overlay element
+      videoPlayOverlay = document.createElement('div');
+      videoPlayOverlay.style.position = 'absolute';
+      videoPlayOverlay.style.left = '0';
+      videoPlayOverlay.style.top = '0';
+      videoPlayOverlay.style.right = '0';
+      videoPlayOverlay.style.bottom = '0';
+      videoPlayOverlay.style.display = 'flex';
+      videoPlayOverlay.style.alignItems = 'center';
+      videoPlayOverlay.style.justifyContent = 'center';
+      videoPlayOverlay.style.zIndex = '50';
+      videoPlayOverlay.style.cursor = 'pointer';
+      // subtle background so user knows they must tap (transparent)
+      videoPlayOverlay.style.background = 'rgba(0,0,0,0.15)';
+      const btn = document.createElement('button');
+      btn.textContent = '► Play Video';
+      btn.style.padding = '12px 22px';
+      btn.style.fontSize = '1.1rem';
+      btn.style.borderRadius = '10px';
+      btn.style.border = 'none';
+      btn.style.background = 'linear-gradient(90deg,var(--primary-color),var(--secondary-color))';
+      btn.style.color = '#fff';
+      btn.addEventListener('click', (ev)=>{
+        ev.stopPropagation();
+        hideVideoPlayOverlay();
+        if (birthdayVideo) {
+          birthdayVideo.muted = false;
+          birthdayVideo.play().then(()=> {
+            try { music.pause(); } catch(e){}
+          }).catch(()=>{});
+        }
+      });
+      videoPlayOverlay.appendChild(btn);
+      // make sure videoBox is positioned relative so overlay fits
+      videoBox.style.position = 'relative';
+      videoBox.appendChild(videoPlayOverlay);
+    }
+    function hideVideoPlayOverlay(){
+      if (videoPlayOverlay && videoPlayOverlay.parentNode) videoPlayOverlay.parentNode.removeChild(videoPlayOverlay);
+      videoPlayOverlay = null;
+    }
+
+    function unwrapGift(){
+      if (!giftContainer) return;
+      giftContainer.classList.add('unwrap');
+      giftContainer.style.animationPlayState = 'paused';
+
+      setTimeout(()=>{
+        giftContainer.style.display = 'none';
+        // show video area
+        videoBox.classList.add('show');
+
+        if (birthdayVideo) {
+          // try to play immediately; if browser blocks autoplay, show overlay
+          birthdayVideo.muted = false;
+          const playPromise = birthdayVideo.play();
+          if (playPromise !== undefined) {
+            playPromise.then(()=> {
+              // video started -> pause music
+              try { music.pause(); } catch(e){}
+            }).catch((err)=> {
+              // autoplay blocked — show overlay so user can tap once to start
+              showVideoPlayOverlay();
+            });
+          } else {
+            // legacy fallback: show overlay
+            showVideoPlayOverlay();
+          }
+        }
+      }, 600);
+
+      setTimeout(()=>{ if (closingMsg) closingMsg.classList.add('show'); }, 1000);
+    }
+    if (giftRibbon) giftRibbon.addEventListener('click', unwrapGift);
+
+    // Video events: pause/resume music + end flow
+    if (birthdayVideo) {
+      birthdayVideo.addEventListener('play', () => {
+        // hide overlay if displayed
+        hideVideoPlayOverlay();
+        try { music.pause(); } catch(e){}
+      });
+      birthdayVideo.addEventListener('pause', () => {
+        // if user paused (but not ended) resume background music
+        if (!birthdayVideo.ended) {
+          try { music.play().catch(()=>{}); } catch(e){}
+        }
+      });
+      birthdayVideo.addEventListener('ended', () => {
+        // resume music
+        try { music.play().catch(()=>{}); } catch(e){}
+        // move to cards after a brief delay (so user sees final frame)
+        setTimeout(()=> showPage('page-cards'), 600);
+      });
+    }
+
+    /* ========= Replay flow: reset everything ========= */
+    function resetAllForReplay(){
+  // stop and reset video
+        try {
+            if (birthdayVideo) {
+            birthdayVideo.pause();
+            birthdayVideo.currentTime = 0;
+            }
+        } catch(e){}
+
+        // hide video UI
+        if (videoBox) videoBox.classList.remove('show');
+        hideVideoPlayOverlay();
+
+        // restore gift UI
+        if (giftContainer) {
+            giftContainer.style.display = '';
+            giftContainer.classList.remove('unwrap');
+            giftContainer.style.animationPlayState = '';
+        }
+
+        // reset surprise closing message
+        if (closingMsg) closingMsg.classList.remove('show');
+
+        // reset cake state
+        isExtinguished = false;
+        if (candle) candle.classList.remove('extinguished');
+        if (flame) {
+            flame.style.display = '';
+            flame.style.opacity = '';
+            flame.style.transform = '';
+        }
+
+        // ✨ FIX HERE
+        if (instruction) {
+            instruction.classList.remove('fade-out');
+            instruction.textContent = "Click Start to make a wish...";
+        }
+        if (cakeContainer) {
+            cakeContainer.classList.remove('fade-out');
+        }
+
+        // hide birthday wish + photos reveal
+        if (birthdayWish) {
+            birthdayWish.classList.add('hidden');
+            birthdayWish.classList.remove('show');
+        }
+        photos.forEach(p => p.classList.remove('reveal'));
+
+        // show cake controls
+        if (startButton) startButton.classList.remove('hidden');
+        if (blowButton) blowButton.classList.add('hidden');
+
+        // ensure music is playing
+        try { music.play().catch(()=>{}); } catch(e){}
+
+        // show cake page
+        showPage('page-cake');
+    }
+
+
+    if (replayToCake) {
+      replayToCake.addEventListener('click', (ev)=>{
+        ev.preventDefault();
+        resetAllForReplay();
+      });
+    }
+
+    /* ========= small heading letter animations + photo bounce (unchanged) ========= */
+    document.addEventListener('DOMContentLoaded', () => {
+      const heading = document.getElementById('main-heading');
+      if (heading) {
+        const text = heading.textContent;
+        heading.innerHTML = '';
+        for (let i = 0; i < text.length; i++){
+          const span = document.createElement('span');
+          span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+          heading.appendChild(span);
+          span.addEventListener('mouseover', ()=> span.classList.add('hover-jiggle'));
+          span.addEventListener('animationend', ()=> span.classList.remove('hover-jiggle'));
+        }
+      }
+      const cardsHeading = document.getElementById('cards-heading');
+      if (cardsHeading) {
+        const text = cardsHeading.textContent;
+        cardsHeading.innerHTML = '';
+        for (let i = 0; i < text.length; i++){
+          const span = document.createElement('span');
+          span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+          cardsHeading.appendChild(span);
+          span.addEventListener('mouseover', ()=> span.classList.add('hover-jiggle'));
+          span.addEventListener('animationend', ()=> span.classList.remove('hover-jiggle'));
+        }
+      }
+
+      const photoEls = document.querySelectorAll('.photo-container');
+      photoEls.forEach(photo => {
+        photo.addEventListener('animationend', () => {
+          if (photo.classList.contains('photo-bounce')) photo.classList.remove('photo-bounce');
+        });
+      });
+      document.addEventListener('mousemove', (e) => {
+        photoEls.forEach(photo => {
+          const rect = photo.getBoundingClientRect();
+          const photoCenterX = rect.left + rect.width / 2;
+          const photoCenterY = rect.top + rect.height / 2;
+          const distance = Math.hypot(e.clientX - photoCenterX, e.clientY - photoCenterY);
+          if (distance < 150 && !photo.classList.contains('photo-bounce')) photo.classList.add('photo-bounce');
+        });
+      });
+    });
+
+    // start on cake page
+    showPage('page-cake');
+
+  </script>
+</body>
+</html>
